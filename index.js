@@ -265,7 +265,12 @@ function share() {
 }
 
 function cubeState() {
-    return JSON.parse(localStorage.getItem("cubeState"))
+    const key = "cubeState"
+    if (localStorage.getItem(key) === null) {
+        resetCubeState()
+    }
+    const data = localStorage.getItem(key)
+    return JSON.parse(data)
 }
 
 function validMoves() {
