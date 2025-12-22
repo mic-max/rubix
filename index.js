@@ -395,11 +395,8 @@ function createSVG(cubeNumber) {
     svg.setAttribute("width", 389)
     svg.setAttribute("height", 413)
 
-    // TODO: undo this
-    if (cubeNumber == 0) {
-        svg.addEventListener("wheel", (event) => wheel(event, svg, cubeNumber))
-        svg.addEventListener("mousedown", (event) => mousedown(event, svg, cubeNumber))	
-    }
+    svg.addEventListener("wheel", (event) => wheel(event, svg, cubeNumber))
+    svg.addEventListener("mousedown", (event) => mousedown(event, svg, cubeNumber))	
 
     let defs = document.createElementNS(SVG_NS, "defs")	
     // let pattern = document.createElementNS(SVG_NS, "pattern")
@@ -503,20 +500,35 @@ function wheel(event, parentSvg, cubeNumber) {
 
     for (let i = 0; i < scrollPolygons.length; i++) {
         if (isPointInsidePolygon(x, y, scrollPolygons[i])) {
-            const moveMapping = {
-                "-0": "L'",
-                "+0": "L",
-                "-1": "R",
-                "+1": "R'",
-                "-2": "F'",
-                "+2": "F",
-                "-3": "B",
-                "+3": "B'",
+            let moveMapping = null
+            if (cubeNumber === 0) {
+                moveMapping = {
+                    "-0": "L'",
+                    "+0": "L",
+                    "-1": "R",
+                    "+1": "R'",
+                    "-2": "F'",
+                    "+2": "F",
+                    "-3": "B",
+                    "+3": "B'",
+                }
+            } else {
+                moveMapping = {
+                    "-0": "F'",
+                    "+0": "F",
+                    "-1": "B",
+                    "+1": "B'",
+                    "-2": "L'",
+                    "+2": "L",
+                    "-3": "R",
+                    "+3": "R'",
+                }
             }
+            
             makeMove(moveMapping[`${event.deltaY > 0 ? "+" : "-"}${i}`])
             event.preventDefault()
             break
-        }	
+        }
     }
 
     updatePolygons()
@@ -529,14 +541,24 @@ function mousedown(event, parentSvg, cubeNumber) {
 
     horizontalPolygons.forEach((element, index) => {
         if (isPointInsidePolygon(x, y, element)) {
-            const moveMapping = {
-                "10": "U",
-                "30": "U'",
-                "11": "D'",
-                "31": "D",
+            let moveMapping = null
+            if (cubeNumber === 0) {
+                moveMapping = {
+                    "10": "U",
+                    "30": "U'",
+                    "11": "D'",
+                    "31": "D",
+                }
+            } else {
+                moveMapping = {
+                    "10": "D",
+                    "30": "D'",
+                    "11": "U'",
+                    "31": "U",
+                }
             }
             makeMove(moveMapping[`${event.which}${index}`])
-        }	
+        }
     })
 
     updatePolygons()
