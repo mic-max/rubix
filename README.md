@@ -8,6 +8,8 @@ https://stackoverflow.com/questions/16089421/how-do-i-detect-keypresses-in-javas
 
 https://jperm.net/3x3/moves
 
+- "Add M and X moves" - boulajp
+
 add a timer. user presses spacebar to start, or first move starts the stopwatch
 - modes where you have limited time to look at the cube before the game time starts ticking away
 - leaderboard system
