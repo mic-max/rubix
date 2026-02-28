@@ -193,9 +193,11 @@ const moves = {
 // Main
 isWonky = false
 let moveNumber = 0
+let moveHistory = []
 
 const cubesDiv = document.getElementById("cubes")
 const moveNumberSpan = document.getElementById("moveNumber")
+const moveHistoryTextarea = document.getElementById("moveHistory")
 const shuffleMoves = document.getElementById("shuffleMoves")
 cubesDiv.appendChild(createSVG(0))
 cubesDiv.appendChild(createSVG(1))
@@ -303,12 +305,18 @@ function isPointInsidePolygon(x, y, polygon) {
 
 function resetCubeState() {
     localStorage.setItem("cubeState", JSON.stringify(Array.from({length: 54}, (_, i) => Math.floor(i / 9))))
-    setMoveNumber(0)
+    resetMoveCounter()
 }
 
 function setMoveNumber(value) {
     moveNumber = value
     moveNumberSpan.innerHTML = moveNumber
+}
+
+function resetMoveCounter() {
+    moveHistory = []
+    moveHistoryTextarea.value = ""
+    setMoveNumber(0)
 }
 
 function updatePolygons() {
@@ -373,6 +381,9 @@ function makeMove(move) {
     // TODO: actually set this to the movequeue length, since a move can be undone by making another move
     // keep a separate actual move and a simplified move counter
     setMoveNumber(++moveNumber)
+    moveHistory.push(`${moveNumber.toString().padStart(4)}. ${move}`)
+    moveHistoryTextarea.value = moveHistory.join("\n")
+    moveHistoryTextarea.scrollTop = moveHistoryTextarea.scrollHeight
 
     if (isSolved()) {
         console.log("solved!")

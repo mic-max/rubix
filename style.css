@@ -151,3 +151,54 @@ svg text {
 #colour-legend.paint-mode .swatch-count {
     display: block;
 }
+
+#moveHistoryPanel {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 140px;
+    display: flex;
+    flex-direction: column;
+    background: #1a2634;
+    border-left: 1px solid #444;
+    box-sizing: border-box;
+}
+
+#moveHistoryHeader {
+    padding: 6px;
+    font-family: monospace;
+    font-size: 13px;
+    color: #8899aa;
+    border-bottom: 1px solid #444;
+    white-space: pre;
+    flex-shrink: 0;
+}
+
+#moveHistory {
+    flex: 1;
+    background: transparent;
+    color: #c8d6e5;
+    border: none;
+    padding: 6px;
+    font-family: monospace;
+    font-size: 13px;
+    resize: none;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+/* Custom scrollbar — Webkit (Chrome, Edge, Safari) */
+#moveHistory::-webkit-scrollbar { width: 4px; }
+#moveHistory::-webkit-scrollbar-track { background: transparent; }
+#moveHistory::-webkit-scrollbar-thumb {
+    background: #445566;
+    border-radius: 2px;
+}
+#moveHistory::-webkit-scrollbar-thumb:hover { background: #667788; }
+
+/* Custom scrollbar — Firefox */
+#moveHistory {
+    scrollbar-width: thin;
+    scrollbar-color: #445566 transparent;
+}

@@ -20,7 +20,10 @@
       <label for="shuffleMoves">Shuffle Moves:</label>
       <input type="number" id="shuffleMoves" name="shuffleMoves" value="18" min="1" max="1000000" />
 
-      <p>Move: <span id="moveNumber">0</span></p>
+      <p>
+        Move: <span id="moveNumber">0</span>
+        <button onclick="resetMoveCounter()">Reset</button>
+      </p>
       <p>Rotate the cube with scroll wheel and right and left click. Only on the left cube. You cannot rotate the inner segments.</p>
     </p>
 
@@ -56,6 +59,11 @@
   <div id="colour-legend"></div>
 
   <div id="cubes" oncontextmenu="return false"></div>
+
+  <div id="moveHistoryPanel">
+    <div id="moveHistoryHeader">  No. Move</div>
+    <textarea id="moveHistory" readonly></textarea>
+  </div>
 
   <script src="index.js"></script>
 </body>
