@@ -191,7 +191,8 @@ const moves = {
 }
 
 // Main
-isWonky = false
+let isWonky = false
+let wonkyOffsets = null
 let moveNumber = 0
 
 const cubesDiv = document.getElementById("cubes")
@@ -418,17 +419,20 @@ function makeMove(move, isShuffle = false, shuffleMoveNum = null) {
 }
 
 function wonky() {
-    if (isWonky) {
-        let wonkyVertices = JSON.parse(JSON.stringify(vertices))
-        for (let i = 0; i < vertices.length; i++) {
-            wonkyVertices[i][0] += (Math.random() * 14) - 7
-            wonkyVertices[i][1] += (Math.random() * 14) - 7
-        }
-    }
     isWonky = !isWonky
 
-    for (let i = 0; i < polygons.length; i++) {
-        // update their points. either with the wonky values or original
+    if (isWonky) {
+        wonkyOffsets = vertices.map(() => [(Math.random() * 14) - 7, (Math.random() * 14) - 7])
+    }
+
+    for (let j = 0; j < polygons.length; j++) {
+        const i = j % 27
+        const pts = [0, 1, 2, 3].map(x => {
+            const vi = faces[i][x]
+            const [vx, vy] = vertices[vi]
+            return isWonky ? [vx + wonkyOffsets[vi][0], vy + wonkyOffsets[vi][1]] : [vx, vy]
+        })
+        polygons[j].setAttribute("points", pts.map(p => p.join(",")).join(","))
     }
 }
 
