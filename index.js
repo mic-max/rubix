@@ -202,6 +202,15 @@ cubesDiv.appendChild(createSVG(0))
 cubesDiv.appendChild(createSVG(1))
 createColourLegend()
 document.addEventListener("mouseup", () => { isPainting = false })
+document.getElementById("main").addEventListener("wheel", (event) => {
+    if (!paintMode) return
+    event.preventDefault()
+    if (event.deltaY > 0) {
+        setActivePaintColour((activePaintColour + 1) % COLOURS.length)
+    } else {
+        setActivePaintColour((activePaintColour - 1 + COLOURS.length) % COLOURS.length)
+    }
+}, { passive: false })
 
 const urlParams = new URLSearchParams(window.location.search);
 const myParam = urlParams.get("state");
@@ -360,12 +369,10 @@ function hasWhiteCross() {
 }
 
 function makeMove(move, isShuffle = false, shuffleMoveNum = null) {
-    console.log(move)
     if (!validMoves().includes(move)) {
         return console.error(`Invalid Move: ${move}`)
     }
 
-    // console.log(`Make Move: ${move}`)
     const copy = Array.from({length: 54}, (_, i) => cubeState()[i])
     const state = cubeState()
 
@@ -482,15 +489,7 @@ function createSVG(cubeNumber) {
 }
 
 function wheel(event, parentSvg, cubeNumber) {
-    if (paintMode) {
-        event.preventDefault()
-        if (event.deltaY > 0) {
-            setActivePaintColour((activePaintColour + 1) % COLOURS.length)
-        } else {
-            setActivePaintColour((activePaintColour - 1 + COLOURS.length) % COLOURS.length)
-        }
-        return
-    }
+    if (paintMode) return
     const svgRect = parentSvg.getBoundingClientRect()
     const x = event.clientX - svgRect.left
     const y = event.clientY - svgRect.top
@@ -584,6 +583,7 @@ function createColourLegend() {
             label.style.backgroundColor = e.target.value
             localStorage.setItem("colours", JSON.stringify(COLOURS))
             updatePolygons()
+            updateResetBtnVisibility()
         })
 
         const count = document.createElement("span")
@@ -603,23 +603,12 @@ function createColourLegend() {
         swatches.push({ label, input, count })
     })
 
-    const resetBtn = document.createElement("button")
-    resetBtn.textContent = "Reset"
-    resetBtn.addEventListener("click", () => {
-        COLOURS.splice(0, COLOURS.length, ...DEFAULT_COLOURS)
-        localStorage.removeItem("colours")
-        swatches.forEach(({ label, input }, i) => {
-            input.value = COLOURS[i]
-            label.style.backgroundColor = COLOURS[i]
-        })
-        updatePolygons()
-    })
-    container.appendChild(resetBtn)
+    const leftPanel = document.getElementById("leftPanel")
 
     const paintBtn = document.createElement("button")
     paintBtn.textContent = "Paint Mode"
     paintBtn.addEventListener("click", () => enterPaintMode(container, paintBtn, applyBtn, cancelBtn))
-    container.appendChild(paintBtn)
+    leftPanel.appendChild(paintBtn)
 
     const applyBtn = document.createElement("button")
     applyBtn.textContent = "Apply"
@@ -629,13 +618,35 @@ function createColourLegend() {
         if (!valid) return
         exitPaintMode(container, paintBtn, applyBtn, cancelBtn, true)
     })
-    container.appendChild(applyBtn)
+    leftPanel.appendChild(applyBtn)
 
     const cancelBtn = document.createElement("button")
     cancelBtn.textContent = "Cancel"
     cancelBtn.classList.add("hide")
     cancelBtn.addEventListener("click", () => exitPaintMode(container, paintBtn, applyBtn, cancelBtn, false))
-    container.appendChild(cancelBtn)
+    leftPanel.appendChild(cancelBtn)
+
+    const resetBtn = document.createElement("button")
+    resetBtn.textContent = "Reset"
+    resetBtn.style.marginTop = "auto"
+    resetBtn.addEventListener("click", () => {
+        COLOURS.splice(0, COLOURS.length, ...DEFAULT_COLOURS)
+        localStorage.removeItem("colours")
+        swatches.forEach(({ label, input }, i) => {
+            input.value = COLOURS[i]
+            label.style.backgroundColor = COLOURS[i]
+        })
+        updatePolygons()
+        updateResetBtnVisibility()
+    })
+    container.appendChild(resetBtn)
+
+    updateResetBtnVisibility()
+
+    function updateResetBtnVisibility() {
+        const modified = COLOURS.some((c, i) => c !== DEFAULT_COLOURS[i])
+        resetBtn.classList.toggle("hide", !modified)
+    }
 }
 
 function updateSwatchCounts() {

@@ -6,64 +6,67 @@
   <link rel="icon" href="favicon.png">
 </head>
 <body>
-  <h1>Rubix Cube</h1>
+  <div id="layout">
 
-  <div>
-    <p>
-      Debug Mode
-      <input id="debug" type="checkbox" onchange="debug()">
+    <div id="leftPanel">
+      <label>Debug Mode <input id="debug" type="checkbox" onchange="debug()"></label>
       <button onclick="resetCubeState(); updatePolygons();">Reset</button>
       <button onclick="shuffle()">Shuffle</button>
-      <!-- <button onclick="validate()">Validate</button> -->
-      <!-- <button onclick="share()">Share</button> -->
-
       <label for="shuffleMoves">Shuffle Moves:</label>
       <input type="number" id="shuffleMoves" name="shuffleMoves" value="18" min="1" max="1000000" />
 
+      <!-- <button onclick="validate()">Validate</button> -->
+      <button onclick="share()">Share</button>
+
+      <!--
+      <p>Wonky Mode</p>
+      <input id="wonky" type="checkbox" onchange="wonky()">
+      -->
+
+      <!-- algorithm selector -->
+      <!-- beginner -->
+      <!-- Fridrich (CFOP) -->
+      <!-- step by step algorithm, tells user what it is trying to do. good for learning -->
+    </div>
+
+    <div id="main">
+      <h1>Rubix Cube</h1>
+
       <p>Rotate the cube with the scroll wheel & left and right click. The inner segments do not rotate.</p>
       <p>The right cube is the view from the other side. It is as if you picked up the left cube and flipped it 180 degrees towards/away from yourself.</p>
-    </p>
 
-    <!--
-    <p>Wonky Mode</p>
-    <input id="wonky" type="checkbox" onchange="wonky()">
-    -->
+      <div>
+        <button onclick="makeMove(`U`)">U</button>
+        <button onclick="makeMove(`D`)">D</button>
+        <button onclick="makeMove(`R`)">R</button>
+        <button onclick="makeMove(`L`)">L</button>
+        <button onclick="makeMove(`F`)">F</button>
+        <button onclick="makeMove(`B`)">B</button>
+      </div>
 
-    <!-- algorithm selector -->
-    <!-- beginner -->
-    <!-- Fridrich (CFOP) -->
-    <!-- step by step algorithm, tells user what it is trying to do. good for learning -->
-  </div>
+      <div>
+        <button onclick="makeMove(`U'`)">U'</button>
+        <button onclick="makeMove(`D'`)">D'</button>
+        <button onclick="makeMove(`R'`)">R'</button>
+        <button onclick="makeMove(`L'`)">L'</button>
+        <button onclick="makeMove(`F'`)">F'</button>
+        <button onclick="makeMove(`B'`)">B'</button>
+      </div>
 
-  <div>
-    <button onclick="makeMove(`U`)">U</button>
-    <button onclick="makeMove(`D`)">D</button>
-    <button onclick="makeMove(`R`)">R</button>
-    <button onclick="makeMove(`L`)">L</button>
-    <button onclick="makeMove(`F`)">F</button>
-    <button onclick="makeMove(`B`)">B</button>
-  </div>
-
-  <div>
-    <button onclick="makeMove(`U'`)">U'</button>
-    <button onclick="makeMove(`D'`)">D'</button>
-    <button onclick="makeMove(`R'`)">R'</button>
-    <button onclick="makeMove(`L'`)">L'</button>
-    <button onclick="makeMove(`F'`)">F'</button>
-    <button onclick="makeMove(`B'`)">B'</button>
-  </div>
-
-  <div id="colour-legend"></div>
-
-  <div id="cubes" oncontextmenu="return false"></div>
-
-  <div id="moveHistoryPanel">
-    <div id="moveHistoryHeader">  No. Move</div>
-    <div id="moveHistory"></div>
-    <div id="moveHistoryFooter">
-      Move: <span id="moveNumber">0</span>
-      <button onclick="resetMoveCounter()">Reset</button>
+      <div id="cubes" oncontextmenu="return false"></div>
     </div>
+
+    <div id="colour-legend"></div>
+
+    <div id="moveHistoryPanel">
+      <div id="moveHistoryHeader">  No. Move</div>
+      <div id="moveHistory"></div>
+      <div id="moveHistoryFooter">
+        Move: <span id="moveNumber">0</span>
+        <button onclick="resetMoveCounter()">Reset</button>
+      </div>
+    </div>
+
   </div>
 
   <script src="index.js"></script>
