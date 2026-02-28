@@ -507,6 +507,8 @@ function cyclePolygonColour(event, j) {
 
 function createColourLegend() {
     const container = document.getElementById("colour-legend")
+    const swatches = []
+
     COLOURS.forEach((colour, i) => {
         const label = document.createElement("label")
         label.className = "colour-swatch"
@@ -525,7 +527,21 @@ function createColourLegend() {
         label.style.backgroundColor = colour
         label.appendChild(input)
         container.appendChild(label)
+        swatches.push({ label, input })
     })
+
+    const resetBtn = document.createElement("button")
+    resetBtn.textContent = "Reset"
+    resetBtn.addEventListener("click", () => {
+        COLOURS.splice(0, COLOURS.length, ...DEFAULT_COLOURS)
+        localStorage.removeItem("colours")
+        swatches.forEach(({ label, input }, i) => {
+            input.value = COLOURS[i]
+            label.style.backgroundColor = COLOURS[i]
+        })
+        updatePolygons()
+    })
+    container.appendChild(resetBtn)
 }
 
 function calculateCentroid(points) {
