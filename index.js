@@ -193,11 +193,10 @@ const moves = {
 // Main
 isWonky = false
 let moveNumber = 0
-let moveHistory = []
 
 const cubesDiv = document.getElementById("cubes")
 const moveNumberSpan = document.getElementById("moveNumber")
-const moveHistoryTextarea = document.getElementById("moveHistory")
+const moveHistoryDiv = document.getElementById("moveHistory")
 const shuffleMoves = document.getElementById("shuffleMoves")
 cubesDiv.appendChild(createSVG(0))
 cubesDiv.appendChild(createSVG(1))
@@ -219,18 +218,25 @@ function shuffle() {
     const shuffles = parseInt(shuffleMoves.value)
     const availableMoves = validMoves()
 
+    moveHistoryDiv.appendChild(document.createElement("hr"))
+    moveHistoryDiv.scrollTop = moveHistoryDiv.scrollHeight
+
     let i = 0
     let lastMove = null
     function makeNextRandomMove() {
-        if (i++ < shuffles) {
+        if (i < shuffles) {
             let randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)]
             while (lastMove && randomMove[0] == lastMove[0] && randomMove != lastMove) {
                 // If there is a last move and it is the opposite of the current move choice
                 randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)]
             }
             lastMove = randomMove
-            makeMove(randomMove)
+            i++
+            makeMove(randomMove, true, i)
             setTimeout(makeNextRandomMove, 10)
+        } else {
+            moveHistoryDiv.appendChild(document.createElement("hr"))
+            moveHistoryDiv.scrollTop = moveHistoryDiv.scrollHeight
         }
     }
 
@@ -314,8 +320,7 @@ function setMoveNumber(value) {
 }
 
 function resetMoveCounter() {
-    moveHistory = []
-    moveHistoryTextarea.value = ""
+    moveHistoryDiv.innerHTML = ""
     setMoveNumber(0)
 }
 
@@ -354,7 +359,7 @@ function hasWhiteCross() {
         && cubeState()[34] == WHITE
 }
 
-function makeMove(move) {
+function makeMove(move, isShuffle = false, shuffleMoveNum = null) {
     console.log(move)
     if (!validMoves().includes(move)) {
         return console.error(`Invalid Move: ${move}`)
@@ -378,12 +383,18 @@ function makeMove(move) {
     //       most recent state.
     localStorage.setItem("cubeState", JSON.stringify(state))
     updatePolygons()
-    // TODO: actually set this to the movequeue length, since a move can be undone by making another move
-    // keep a separate actual move and a simplified move counter
-    setMoveNumber(++moveNumber)
-    moveHistory.push(`${moveNumber.toString().padStart(4)}. ${move}`)
-    moveHistoryTextarea.value = moveHistory.join("\n")
-    moveHistoryTextarea.scrollTop = moveHistoryTextarea.scrollHeight
+
+    if (!isShuffle) {
+        // TODO: actually set this to the movequeue length, since a move can be undone by making another move
+        // keep a separate actual move and a simplified move counter
+        setMoveNumber(++moveNumber)
+    }
+    const displayNum = isShuffle ? shuffleMoveNum : moveNumber
+    const row = document.createElement("div")
+    row.textContent = `${displayNum.toString().padStart(4)}. ${move}`
+    if (isShuffle) row.classList.add("shuffle-move")
+    moveHistoryDiv.appendChild(row)
+    moveHistoryDiv.scrollTop = moveHistoryDiv.scrollHeight
 
     if (isSolved()) {
         console.log("solved!")
