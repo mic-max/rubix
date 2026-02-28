@@ -1,7 +1,8 @@
 const SVG_NS = "http://www.w3.org/2000/svg"
 
 // Yellow, Blue, Red, White, Orange, Green - https://flatuicolors.com/palette/ca
-const COLOURS = ["#feca57", "#2e86de", "#ee5253", "#c8d6e5", "#ff9f43", "#10ac84"]
+const DEFAULT_COLOURS = ["#feca57", "#2e86de", "#ee5253", "#c8d6e5", "#ff9f43", "#10ac84"]
+let COLOURS = JSON.parse(localStorage.getItem("colours") || "null") || [...DEFAULT_COLOURS]
 let polygons = []
 
 // TODO: ensure symmetry
@@ -192,6 +193,7 @@ const moveNumberSpan = document.getElementById("moveNumber")
 const shuffleMoves = document.getElementById("shuffleMoves")
 cubesDiv.appendChild(createSVG(0))
 cubesDiv.appendChild(createSVG(1))
+createColourLegend()
 
 const urlParams = new URLSearchParams(window.location.search);
 const myParam = urlParams.get("state");
@@ -501,6 +503,29 @@ function cyclePolygonColour(event, j) {
     cubeState()[j]++
     cubeState()[j] %= COLOURS.length
     updatePolygons()
+}
+
+function createColourLegend() {
+    const container = document.getElementById("colour-legend")
+    COLOURS.forEach((colour, i) => {
+        const label = document.createElement("label")
+        label.className = "colour-swatch"
+        label.title = `Face ${i + 1}`
+
+        const input = document.createElement("input")
+        input.type = "color"
+        input.value = colour
+        input.addEventListener("input", (e) => {
+            COLOURS[i] = e.target.value
+            label.style.backgroundColor = e.target.value
+            localStorage.setItem("colours", JSON.stringify(COLOURS))
+            updatePolygons()
+        })
+
+        label.style.backgroundColor = colour
+        label.appendChild(input)
+        container.appendChild(label)
+    })
 }
 
 function calculateCentroid(points) {
