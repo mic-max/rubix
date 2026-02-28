@@ -9,6 +9,11 @@ html, body {
     height: 100vh;
 }
 
+body {
+    display: flex;
+    flex-direction: column;
+}
+
 h1 {
     text-align: center;
     user-select: none;
@@ -17,7 +22,42 @@ h1 {
 
 #layout {
     display: flex;
-    height: 100vh;
+    flex: 1;
+    min-height: 0;
+}
+
+#movePanel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: #1a2634;
+    border-top: 1px solid #444;
+    flex-shrink: 0;
+}
+
+.move-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#movePanel button {
+    min-width: 52px;
+    padding: 8px 10px;
+    font-size: 15px;
+    font-weight: bold;
+    background: #2a3a4e;
+    color: #c8d6e5;
+    border: 1px solid #445566;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#movePanel button:hover {
+    background: #3a4e62;
+    border-color: #8899aa;
 }
 
 #main {
@@ -215,9 +255,10 @@ svg text.vertex-label {
 .swatch-count {
     display: none;
     position: absolute;
-    bottom: 1px;
-    right: 3px;
-    font-size: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
     font-weight: bold;
     color: white;
     text-shadow: 0 1px 2px #000, 0 0 4px #000;
@@ -227,6 +268,27 @@ svg text.vertex-label {
 
 #colour-legend.paint-mode .swatch-count {
     display: block;
+}
+
+.swatch-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.swatch-indicator {
+    display: none;
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 1;
+    width: 14px;
+}
+
+.swatch-indicator.ok  { color: #10ac84; }
+.swatch-indicator.err { color: #ee5253; }
+
+#colour-legend.paint-mode .swatch-indicator {
+    display: inline;
 }
 
 #moveHistoryPanel {

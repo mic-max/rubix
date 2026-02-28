@@ -1,11 +1,12 @@
 const SVG_NS = "http://www.w3.org/2000/svg"
 
 const UNUSED_COLOUR = "#576574"
+// Yellow, blue, red, white, orange, green
 const THEMES = {
     "default": ["#feca57", "#2e86de", "#ee5253", "#c8d6e5", "#ff9f43", "#10ac84"],
-    "light":   ["#ffeaa7", "#74b9ff", "#ff7675", "#dfe6e9", "#fdcb6e", "#55efc4"],
-    "dark":    ["#b8860b", "#1e3a5f", "#7b1f1f", "#495057", "#8b4513", "#1a5c38"],
+    "french":  ["#f6b93b", "#4a69bd", "#b71540", "#c8d6e5", "#fa983a", "#079992"],
 }
+
 let activeTheme = localStorage.getItem("theme") || "default"
 let COLOURS = activeTheme === "custom"
     ? (JSON.parse(localStorage.getItem("colours") || "null") || [...THEMES["default"]])
@@ -627,6 +628,9 @@ function createColourLegend() {
     const container = document.getElementById("colour-legend")
 
     COLOURS.forEach((colour, i) => {
+        const wrapper = document.createElement("div")
+        wrapper.className = "swatch-row"
+
         const label = document.createElement("label")
         label.className = "colour-swatch"
         label.title = `Face ${i + 1}`
@@ -646,6 +650,9 @@ function createColourLegend() {
         count.className = "swatch-count"
         count.textContent = "0"
 
+        const indicator = document.createElement("span")
+        indicator.className = "swatch-indicator"
+
         label.style.backgroundColor = colour
         label.appendChild(input)
         label.appendChild(count)
@@ -655,8 +662,10 @@ function createColourLegend() {
                 setActivePaintColour(i)
             }
         })
-        container.appendChild(label)
-        swatches.push({ label, input, count })
+        wrapper.appendChild(label)
+        wrapper.appendChild(indicator)
+        container.appendChild(wrapper)
+        swatches.push({ label, input, count, indicator })
     })
 
     const leftPanel = document.getElementById("leftPanel")
@@ -685,7 +694,7 @@ function createColourLegend() {
     const themeSelector = document.createElement("div")
     themeSelector.id = "theme-selector"
 
-    const themeNames = ["default", "light", "dark", "custom"]
+    const themeNames = [...Object.keys(THEMES), "custom"]
     themeNames.forEach(name => {
         const btn = document.createElement("button")
         btn.textContent = name
@@ -701,8 +710,12 @@ function createColourLegend() {
 
 function updateSwatchCounts() {
     const state = paintMode ? paintModeCubeState : cubeState()
-    swatches.forEach(({ count }, i) => {
-        count.textContent = state.filter(v => v === i).length
+    swatches.forEach(({ count, indicator }, i) => {
+        const n = state.filter(v => v === i).length
+        count.textContent = n
+        indicator.textContent = n === 9 ? "\u2713" : "\u2717"
+        indicator.classList.toggle("ok", n === 9)
+        indicator.classList.toggle("err", n !== 9)
     })
 }
 
