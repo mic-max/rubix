@@ -2,8 +2,14 @@ const SVG_NS = "http://www.w3.org/2000/svg"
 
 // Yellow, Blue, Red, White, Orange, Green - https://flatuicolors.com/palette/ca
 const DEFAULT_COLOURS = ["#feca57", "#2e86de", "#ee5253", "#c8d6e5", "#ff9f43", "#10ac84"]
+const UNUSED_COLOUR = "#576574"
 let COLOURS = JSON.parse(localStorage.getItem("colours") || "null") || [...DEFAULT_COLOURS]
 let polygons = []
+let paintMode = false
+let activePaintColour = null
+let paintModeCubeState = null
+let swatches = []
+let isPainting = false
 
 // TODO: ensure symmetry
 const vertices = [
@@ -194,6 +200,7 @@ const shuffleMoves = document.getElementById("shuffleMoves")
 cubesDiv.appendChild(createSVG(0))
 cubesDiv.appendChild(createSVG(1))
 createColourLegend()
+document.addEventListener("mouseup", () => { isPainting = false })
 
 const urlParams = new URLSearchParams(window.location.search);
 const myParam = urlParams.get("state");
@@ -305,8 +312,9 @@ function setMoveNumber(value) {
 }
 
 function updatePolygons() {
-    cubeState().forEach((element, index) => {
-        polygons[index].setAttribute("fill", COLOURS[element])
+    const state = paintMode ? paintModeCubeState : cubeState()
+    state.forEach((element, index) => {
+        polygons[index].setAttribute("fill", element === -1 ? UNUSED_COLOUR : COLOURS[element])
     })
 }
 
@@ -413,6 +421,29 @@ function createSVG(cubeNumber) {
         polygon.setAttribute("stroke-width", 2.5)
 
         polygons.push(polygon)
+        const paint = () => {
+            if (!paintMode || activePaintColour === null) return
+            if (paintModeCubeState[j] === activePaintColour) return
+            if (paintModeCubeState.filter(v => v === activePaintColour).length >= 9) return
+            paintModeCubeState[j] = activePaintColour
+            updatePolygons()
+            updateSwatchCounts()
+        }
+        polygon.addEventListener("mousedown", (e) => {
+            if (e.button !== 0) return
+            isPainting = true
+            paint()
+        })
+        polygon.addEventListener("mouseover", () => {
+            if (isPainting) paint()
+        })
+        polygon.addEventListener("contextmenu", (e) => {
+            if (!paintMode) return
+            e.preventDefault()
+            paintModeCubeState[j] = -1
+            updatePolygons()
+            updateSwatchCounts()
+        })
         svg.appendChild(polygon)
         
         // Text
@@ -429,6 +460,15 @@ function createSVG(cubeNumber) {
 }
 
 function wheel(event, parentSvg, cubeNumber) {
+    if (paintMode) {
+        event.preventDefault()
+        if (event.deltaY > 0) {
+            setActivePaintColour((activePaintColour + 1) % COLOURS.length)
+        } else {
+            setActivePaintColour((activePaintColour - 1 + COLOURS.length) % COLOURS.length)
+        }
+        return
+    }
     const svgRect = parentSvg.getBoundingClientRect()
     const x = event.clientX - svgRect.left
     const y = event.clientY - svgRect.top
@@ -470,6 +510,7 @@ function wheel(event, parentSvg, cubeNumber) {
 }
 
 function mousedown(event, parentSvg, cubeNumber) {
+    if (paintMode) return
     const svgRect = parentSvg.getBoundingClientRect()
     const x = event.clientX - svgRect.left
     const y = event.clientY - svgRect.top
@@ -507,7 +548,6 @@ function cyclePolygonColour(event, j) {
 
 function createColourLegend() {
     const container = document.getElementById("colour-legend")
-    const swatches = []
 
     COLOURS.forEach((colour, i) => {
         const label = document.createElement("label")
@@ -524,10 +564,21 @@ function createColourLegend() {
             updatePolygons()
         })
 
+        const count = document.createElement("span")
+        count.className = "swatch-count"
+        count.textContent = "0"
+
         label.style.backgroundColor = colour
         label.appendChild(input)
+        label.appendChild(count)
+        label.addEventListener("click", (e) => {
+            if (paintMode) {
+                e.preventDefault()
+                setActivePaintColour(i)
+            }
+        })
         container.appendChild(label)
-        swatches.push({ label, input })
+        swatches.push({ label, input, count })
     })
 
     const resetBtn = document.createElement("button")
@@ -542,6 +593,66 @@ function createColourLegend() {
         updatePolygons()
     })
     container.appendChild(resetBtn)
+
+    const paintBtn = document.createElement("button")
+    paintBtn.textContent = "Paint Mode"
+    paintBtn.addEventListener("click", () => enterPaintMode(container, paintBtn, applyBtn, cancelBtn))
+    container.appendChild(paintBtn)
+
+    const applyBtn = document.createElement("button")
+    applyBtn.textContent = "Apply"
+    applyBtn.classList.add("hide")
+    applyBtn.addEventListener("click", () => {
+        const valid = COLOURS.every((_, i) => paintModeCubeState.filter(v => v === i).length === 9)
+        if (!valid) return
+        exitPaintMode(container, paintBtn, applyBtn, cancelBtn, true)
+    })
+    container.appendChild(applyBtn)
+
+    const cancelBtn = document.createElement("button")
+    cancelBtn.textContent = "Cancel"
+    cancelBtn.classList.add("hide")
+    cancelBtn.addEventListener("click", () => exitPaintMode(container, paintBtn, applyBtn, cancelBtn, false))
+    container.appendChild(cancelBtn)
+}
+
+function updateSwatchCounts() {
+    const state = paintMode ? paintModeCubeState : cubeState()
+    swatches.forEach(({ count }, i) => {
+        count.textContent = state.filter(v => v === i).length
+    })
+}
+
+function setActivePaintColour(i) {
+    activePaintColour = i
+    swatches.forEach(({ label }, idx) => label.classList.toggle("active", idx === i))
+}
+
+function enterPaintMode(container, paintBtn, applyBtn, cancelBtn) {
+    paintMode = true
+    paintModeCubeState = Array(54).fill(-1)
+    updatePolygons()
+    updateSwatchCounts()
+    paintBtn.classList.add("hide")
+    applyBtn.classList.remove("hide")
+    cancelBtn.classList.remove("hide")
+    container.classList.add("paint-mode")
+    setActivePaintColour(0)
+}
+
+function exitPaintMode(container, paintBtn, applyBtn, cancelBtn, apply) {
+    if (apply) {
+        localStorage.setItem("cubeState", JSON.stringify(paintModeCubeState))
+    }
+    paintMode = false
+    paintModeCubeState = null
+    activePaintColour = null
+    swatches.forEach(({ label }) => label.classList.remove("active"))
+    updatePolygons()
+    paintBtn.classList.remove("hide")
+    applyBtn.classList.add("hide")
+    cancelBtn.classList.add("hide")
+    container.classList.remove("paint-mode")
 }
 
 function calculateCentroid(points) {

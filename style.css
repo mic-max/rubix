@@ -109,17 +109,22 @@ svg text {
 }
 
 .colour-swatch {
+    position: relative;
     width: 32px;
     height: 32px;
     border-radius: 4px;
     border: 2px solid #444;
     cursor: pointer;
     display: block;
-    transition: border-color 0.15s;
 }
 
 .colour-swatch:hover {
     border-color: #aaa;
+}
+
+.colour-swatch.active {
+    border-color: white;
+    box-shadow: 0 0 0 2px white;
 }
 
 .colour-swatch input[type="color"] {
@@ -127,4 +132,21 @@ svg text {
     width: 0;
     height: 0;
     position: absolute;
+}
+
+.swatch-count {
+    display: none;
+    position: absolute;
+    bottom: 1px;
+    right: 3px;
+    font-size: 10px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 1px 2px #000, 0 0 4px #000;
+    pointer-events: none;
+    line-height: 1;
+}
+
+#colour-legend.paint-mode .swatch-count {
+    display: block;
 }
