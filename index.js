@@ -64,6 +64,18 @@ const horizontalPolygons = [
     [23, 26, 29, 36, 33, 30],
 ].map(x => x.map(i => vertices[i]))
 
+const WHEEL_MAPS = [
+    { "-0":"L'","+0":"L", "-1":"M'","+1":"M", "-2":"R", "+2":"R'",
+      "-3":"F'","+3":"F", "-4":"S'","+4":"S", "-5":"B", "+5":"B'" },
+    { "-0":"F'","+0":"F", "-1":"S'","+1":"S", "-2":"B", "+2":"B'",
+      "-3":"L'","+3":"L", "-4":"M'","+4":"M", "-5":"R", "+5":"R'" },
+]
+
+const CLICK_MAPS = [
+    { "10":"U","30":"U'", "11":"E","31":"E'", "12":"D'","32":"D" },
+    { "10":"D","30":"D'", "11":"E'","31":"E", "12":"U'","32":"U" },
+]
+
 const rotations = {
     "X":  ["R",  "M'", "L'"],
     "X'": ["R'", "M",  "L"],
@@ -271,6 +283,23 @@ if (myParam) {
 cubesDiv.appendChild(createSVG(0))
 cubesDiv.appendChild(createSVG(1))
 createColourLegend()
+
+const movePanel = document.getElementById("movePanel")
+;["U","E","D","R","L","F","B","M","S"].forEach(m => {
+    const d = document.createElement("div")
+    d.className = "move-pair"
+    d.innerHTML = `<button onclick="makeMove('${m}')">${m}</button><button onclick="makeMove('${m}\\'')">${m}'</button>`
+    movePanel.appendChild(d)
+})
+const sep = document.createElement("div")
+sep.className = "move-panel-separator"
+movePanel.appendChild(sep)
+Object.keys(rotations).filter((_,i) => i % 2 === 0).forEach(r => {
+    const d = document.createElement("div")
+    d.className = "move-pair rotation-pair"
+    d.innerHTML = `<button onclick="makeRotation('${r}')">${r}</button><button onclick="makeRotation('${r}\\'')">${r}'</button>`
+    movePanel.appendChild(d)
+})
 document.addEventListener("mouseup", () => { isPainting = false })
 document.getElementById("main").addEventListener("wheel", (event) => {
     if (!paintMode) return
@@ -413,11 +442,6 @@ function debug(event) {
     })
 }
 
-function validate() {
-    // return true if it is solveable
-    // if there could be one or two faces changed to make it valid, change their stroke
-}
-
 function makeMove(move, isShuffle = false, shuffleMoveNum = null, isRotation = false) {
     if (!validMoves().includes(move)) {
         return console.error(`Invalid Move: ${move}`)
@@ -557,40 +581,7 @@ function wheel(event, parentSvg, cubeNumber) {
 
     for (let i = 0; i < scrollPolygons.length; i++) {
         if (isPointInsidePolygon(x, y, scrollPolygons[i])) {
-            let moveMapping = null
-            if (cubeNumber === 0) {
-                moveMapping = {
-                    "-0": "L'",
-                    "+0": "L",
-                    "-1": "M'",
-                    "+1": "M",
-                    "-2": "R",
-                    "+2": "R'",
-                    "-3": "F'",
-                    "+3": "F",
-                    "-4": "S'",
-                    "+4": "S",
-                    "-5": "B",
-                    "+5": "B'",
-                }
-            } else {
-                moveMapping = {
-                    "-0": "F'",
-                    "+0": "F",
-                    "-1": "S'",
-                    "+1": "S",
-                    "-2": "B",
-                    "+2": "B'",
-                    "-3": "L'",
-                    "+3": "L",
-                    "-4": "M'",
-                    "+4": "M",
-                    "-5": "R",
-                    "+5": "R'",
-                }
-            }
-            
-            makeMove(moveMapping[`${event.deltaY > 0 ? "+" : "-"}${i}`])
+            makeMove(WHEEL_MAPS[cubeNumber][`${event.deltaY > 0 ? "+" : "-"}${i}`])
             event.preventDefault()
             break
         }
@@ -607,36 +598,10 @@ function mousedown(event, parentSvg, cubeNumber) {
 
     horizontalPolygons.forEach((element, index) => {
         if (isPointInsidePolygon(x, y, element)) {
-            let moveMapping = null
-            if (cubeNumber === 0) {
-                moveMapping = {
-                    "10": "U",
-                    "30": "U'",
-                    "11": "E",
-                    "31": "E'",
-                    "12": "D'",
-                    "32": "D",
-                }
-            } else {
-                moveMapping = {
-                    "10": "D",
-                    "30": "D'",
-                    "11": "E'",
-                    "31": "E",
-                    "12": "U'",
-                    "32": "U",
-                }
-            }
-            makeMove(moveMapping[`${event.which}${index}`])
+            makeMove(CLICK_MAPS[cubeNumber][`${event.which}${index}`])
         }
     })
 
-    updatePolygons()
-}
-
-function cyclePolygonColour(event, j) {
-    cubeState()[j]++
-    cubeState()[j] %= COLOURS.length
     updatePolygons()
 }
 
@@ -765,23 +730,6 @@ function exitPaintMode(container, paintBtn, applyBtn, cancelBtn, apply) {
     applyBtn.classList.add("hide")
     cancelBtn.classList.add("hide")
     container.classList.remove("paint-mode")
-}
-
-function solve() {
-    const algorithm = document.getElementById("solveAlgorithm").value
-    const state = cubeState()
-    let moves
-    if (algorithm === "beginner") {
-        moves = solveBeginnerMethod(state)
-    }
-    console.log("Solution moves:", moves)
-}
-
-function solveBeginnerMethod(state) {
-    // TODO: implement beginner method (layer-by-layer)
-    // Steps: white cross → white face → middle layer → yellow cross → yellow face → permute last layer
-    // Returns an array of move strings, e.g. ["U", "R", "U'", "R'"]
-    return []
 }
 
 function setActiveTheme(name) {
