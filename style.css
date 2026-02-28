@@ -51,6 +51,10 @@ svg text {
     pointer-events: none;
 }
 
+svg text.vertex-label {
+    fill: lime;
+}
+
 .hide {
     display: none;
 }

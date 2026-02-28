@@ -482,6 +482,15 @@ function createSVG(cubeNumber) {
         svg.appendChild(text)
     }
 
+    for (let i = 0; i < vertices.length; i++) {
+        let label = document.createElementNS(SVG_NS, "text")
+        label.textContent = i
+        label.classList.add("hide", "vertex-label")
+        label.setAttribute("x", vertices[i][0])
+        label.setAttribute("y", vertices[i][1])
+        svg.appendChild(label)
+    }
+
     return svg
 }
 
