@@ -402,15 +402,6 @@ function validate() {
     // if there could be one or two faces changed to make it valid, change their stroke
 }
 
-function isSolved() {
-    for (let i = 0; i < 54; i++) {
-        if (cubeState()[i] != Math.floor(i / 9)) {
-            return false
-        }
-    }
-    return true
-}
-
 function makeMove(move, isShuffle = false, shuffleMoveNum = null) {
     if (!validMoves().includes(move)) {
         return console.error(`Invalid Move: ${move}`)
@@ -445,10 +436,6 @@ function makeMove(move, isShuffle = false, shuffleMoveNum = null) {
     if (isShuffle) row.classList.add("shuffle-move")
     moveHistoryDiv.appendChild(row)
     moveHistoryDiv.scrollTop = moveHistoryDiv.scrollHeight
-
-    if (isSolved()) {
-        console.log("solved!")
-    }
 }
 
 function wonky() {
