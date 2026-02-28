@@ -366,14 +366,6 @@ function isSolved() {
     return true
 }
 
-function hasWhiteCross() {
-    const WHITE = 3
-    return cubeState()[28] == WHITE
-        && cubeState()[30] == WHITE
-        && cubeState()[32] == WHITE
-        && cubeState()[34] == WHITE
-}
-
 function makeMove(move, isShuffle = false, shuffleMoveNum = null) {
     if (!validMoves().includes(move)) {
         return console.error(`Invalid Move: ${move}`)
@@ -411,10 +403,6 @@ function makeMove(move, isShuffle = false, shuffleMoveNum = null) {
 
     if (isSolved()) {
         console.log("solved!")
-    }
-
-    if (hasWhiteCross()) {
-        console.log("white cross!")
     }
 }
 
