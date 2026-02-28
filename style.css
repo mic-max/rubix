@@ -35,6 +35,7 @@ svg text {
     font-family: monospace;
     font-size: 14pt;
     font-weight: 600;
+    pointer-events: none;
 }
 
 .hide {
