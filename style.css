@@ -12,6 +12,7 @@ html, body {
 h1 {
     text-align: center;
     user-select: none;
+    font-variant: small-caps;
 }
 
 #layout {
@@ -23,6 +24,7 @@ h1 {
     flex: 1;
     min-width: 0;
     overflow-y: auto;
+    padding: 10px;
 }
 
 #cubes {

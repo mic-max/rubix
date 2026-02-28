@@ -198,6 +198,14 @@ const cubesDiv = document.getElementById("cubes")
 const moveNumberSpan = document.getElementById("moveNumber")
 const moveHistoryDiv = document.getElementById("moveHistory")
 const shuffleMoves = document.getElementById("shuffleMoves")
+const urlParams = new URLSearchParams(window.location.search);
+const myParam = urlParams.get("state");
+if (myParam) {
+    const buffer = fromBase64(myParam);
+    const values = decodeByteBuffer(buffer);
+    localStorage.setItem("cubeState", JSON.stringify(values))
+}
+
 cubesDiv.appendChild(createSVG(0))
 cubesDiv.appendChild(createSVG(1))
 createColourLegend()
@@ -211,16 +219,6 @@ document.getElementById("main").addEventListener("wheel", (event) => {
         setActivePaintColour((activePaintColour - 1 + COLOURS.length) % COLOURS.length)
     }
 }, { passive: false })
-
-const urlParams = new URLSearchParams(window.location.search);
-const myParam = urlParams.get("state");
-if (myParam) {
-    // TODO load into cubeState
-    // remove query param from url?
-    const buffer = fromBase64(myParam);
-    const values = decodeByteBuffer(buffer);
-    localStorage.setItem("cubeState", JSON.stringify(values))
-}
 
 // Functions
 function shuffle() {
@@ -258,6 +256,9 @@ function createByteBuffer(values) {
         const byteIndex = Math.floor(j / 8)
         const bitOffset = j % 8
         buffer[byteIndex] |= (values[i] & 0b111) << bitOffset
+        if (bitOffset > 5) {
+            buffer[byteIndex + 1] |= (values[i] & 0b111) >> (8 - bitOffset)
+        }
     }
     return buffer
 }
@@ -273,21 +274,25 @@ function fromBase64(base64String) {
 }
 
 function decodeByteBuffer(buffer) {
-    // TODO: FIX
     const values = [];
-    for (let i = 0, j = 0; i < buffer.length * 8 / 3; i++, j += 3) {
+    for (let i = 0, j = 0; i < 54; i++, j += 3) {
         const byteIndex = Math.floor(j / 8)
         const bitOffset = j % 8
-        const value = (buffer[byteIndex] >> (5 - bitOffset)) & 0b111
-        values.push(value);
+        let value = (buffer[byteIndex] >> bitOffset) & 0b111
+        if (bitOffset > 5) {
+            value |= (buffer[byteIndex + 1] << (8 - bitOffset)) & 0b111
+        }
+        values.push(value)
     }
-    return values.slice(0, 54)
+    return values
 }
 
 function share() {
     const buffer = createByteBuffer(cubeState());
     const base64String = toBase64(buffer);
-    navigator.clipboard.writeText(base64String)
+    const url = new URL(window.location.href);
+    url.searchParams.set("state", base64String);
+    navigator.clipboard.writeText(url.toString());
 }
 
 function cubeState() {
