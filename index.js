@@ -51,9 +51,9 @@ const scrollPolygons = [
     [14, 15, 36, 35],
 ].map(x => x.map(i => vertices[i]))
 
-// TODO: add middle row
 const horizontalPolygons = [
     [0, 12, 15, 22, 19, 16],
+    [16, 19, 22, 29, 26, 23],
     [23, 26, 29, 36, 33, 30],
 ].map(x => x.map(i => vertices[i]))
 
@@ -80,6 +80,20 @@ const moves = {
         "7": 5,
         "6": 8,
         "3": 7,
+    },
+    "E": {
+        "12": 21,
+        "13": 22,
+        "14": 23,
+        "21": 50,
+        "22": 49,
+        "23": 48,
+        "50": 41,
+        "49": 40,
+        "48": 39,
+        "41": 14,
+        "40": 13,
+        "39": 12,
     },
     "D": {
         "15": 38,
@@ -588,15 +602,19 @@ function mousedown(event, parentSvg, cubeNumber) {
                 moveMapping = {
                     "10": "U",
                     "30": "U'",
-                    "11": "D'",
-                    "31": "D",
+                    "11": "E",
+                    "31": "E'",
+                    "12": "D'",
+                    "32": "D",
                 }
             } else {
                 moveMapping = {
                     "10": "D",
                     "30": "D'",
-                    "11": "U'",
-                    "31": "U",
+                    "11": "E'",
+                    "31": "E",
+                    "12": "U'",
+                    "32": "U",
                 }
             }
             makeMove(moveMapping[`${event.which}${index}`])
