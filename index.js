@@ -18,7 +18,6 @@ let paintModeCubeState = null
 let swatches = []
 let isPainting = false
 
-// TODO: ensure symmetry
 const vertices = [
     [ 0, 68 ],    [ 74, 43 ],   [ 146, 18 ],
     [ 195, 0 ],   [ 52, 90 ],   [ 126, 63 ],
@@ -48,8 +47,7 @@ const faces = [
     [26, 27, 34, 33], [27, 28, 35, 34], [28, 29, 36, 35],
 ]
 
-// Hitbox for all 6 columns
-const scrollPolygons = [
+const verticalPolygons = [
     [0, 4, 31, 30],
     [4, 8, 32, 31],
     [8, 12, 33, 32],
@@ -579,8 +577,8 @@ function wheel(event, parentSvg, cubeNumber) {
     const x = event.clientX - svgRect.left
     const y = event.clientY - svgRect.top
 
-    for (let i = 0; i < scrollPolygons.length; i++) {
-        if (isPointInsidePolygon(x, y, scrollPolygons[i])) {
+    for (let i = 0; i < verticalPolygons.length; i++) {
+        if (isPointInsidePolygon(x, y, verticalPolygons[i])) {
             makeMove(WHEEL_MAPS[cubeNumber][`${event.deltaY > 0 ? "+" : "-"}${i}`])
             event.preventDefault()
             break
