@@ -399,52 +399,6 @@ function createSVG(cubeNumber) {
     svg.addEventListener("wheel", (event) => wheel(event, svg, cubeNumber))
     svg.addEventListener("mousedown", (event) => mousedown(event, svg, cubeNumber))	
 
-    let defs = document.createElementNS(SVG_NS, "defs")	
-    // let pattern = document.createElementNS(SVG_NS, "pattern")
-    // pattern.id = "imagePattern"
-    // pattern.setAttribute("patternUnits", "userSpaceOnUse")
-    // pattern.setAttribute("width", 100)
-    // pattern.setAttribute("height", 100)
-    // let image = document.createElementNS(SVG_NS, "image")
-    // image.setAttribute("preserveAspectRatio", "xMidYMid meet")
-    // image.setAttribute("href", "repeat.jpg")
-    // image.setAttribute("x", 0)
-    // image.setAttribute("y", 0)
-    // image.setAttribute("width", 100)
-    // image.setAttribute("height", 100)
-    // pattern.appendChild(image)
-    // defs.appendChild(pattern)
-
-    const colourPairs = [
-        ["rgb(254, 202, 87)", "rgb(254, 202, 87)"],
-        ["rgb(84, 160, 255)", "rgb(46, 134, 222)"],
-        ["rgb(255, 107, 107)", "rgb(238, 82, 83)"],
-        ["rgb(200, 214, 229)", "rgb(255, 255, 255)"],
-        ["rgb(255, 159, 67)", "rgb(255, 159, 67)"],
-        ["rgb(29, 209, 161)", "rgb(16, 172, 132)"],
-    ]
-    for (let i = 0; i < colourPairs.length; i++) {
-        let gradient = document.createElementNS(SVG_NS, "linearGradient")
-        gradient.setAttribute("id", `gradient${i}`)
-        gradient.setAttribute("x1", "0%")
-        gradient.setAttribute("y1", "0%")
-        gradient.setAttribute("x2", "100%")
-        gradient.setAttribute("y2", "100%")
-        let stop1 = document.createElementNS(SVG_NS, "stop")
-        stop1.setAttribute("offset", "0%")
-        stop1.setAttribute("style", `stop-color:${colourPairs[i][0]};stop-opacity:1`)
-        gradient.appendChild(stop1)
-
-        let stop2 = document.createElementNS(SVG_NS, "stop")
-        stop2.setAttribute("offset", "100%")
-        stop2.setAttribute("style", `stop-color:${colourPairs[i][1]};stop-opacity:1`)
-        gradient.appendChild(stop2)
-
-        defs.appendChild(gradient)
-    }
-    
-    svg.appendChild(defs)
-    
     for (let i = 0; i < faces.length; i++) {
         let j = i + cubeNumber * 27
         
@@ -452,32 +406,10 @@ function createSVG(cubeNumber) {
 
         let polygon = document.createElementNS(SVG_NS, "polygon")
         polygon.setAttribute("points", points.map(y => y.join(",")).join(",")) // TODO: spaces or commas between points
-        // polygon.setAttribute("fill", COLOURS[cubeState()[j]])
-        polygon.setAttribute("fill", `url(#gradient${cubeState()[j]})`)
+        polygon.setAttribute("fill", COLOURS[cubeState()[j]])
         polygon.setAttribute("stroke", "#222f3e")
         polygon.setAttribute("stroke-width", 2.5)
-        // if (j == 0) {
-            // Note: Attempt to add image to svg with perspective
-            // polygon.setAttribute("fill", `url(#imagePattern)`)
-            // polygon.classList.add("rotated")
 
-            // polygon.setAttribute("preserveAspectRatio", "xMidYMid meet")
-            // polygon.setAttribute("viewBox", "0 0 64 64")
-        // }
-        
-
-        // Click to Cycle Input
-        // const fixedFaces = [4, 13, 22]
-        // if (!fixedFaces.includes(i)) {
-        // 	polygon.classList.add("pointer")
-        // 	polygon.addEventListener("click", (event) => cyclePolygonColour(event, j))
-        // }
-
-        // Button Rotation
-        // const rotateButton = document.getElementById("rotate-button")
-        // rotateButton.addEventListener("click", event => rotateSide(columnFaces[2], true))
-
-        // Polygon
         polygons.push(polygon)
         svg.appendChild(polygon)
         
