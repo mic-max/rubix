@@ -175,6 +175,18 @@ svg text {
     flex-shrink: 0;
 }
 
+#moveHistoryFooter {
+    padding: 6px;
+    font-family: monospace;
+    font-size: 13px;
+    color: #8899aa;
+    border-top: 1px solid #444;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
 #moveHistory {
     flex: 1;
     background: transparent;
