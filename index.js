@@ -685,6 +685,23 @@ function exitPaintMode(container, paintBtn, applyBtn, cancelBtn, apply) {
     container.classList.remove("paint-mode")
 }
 
+function solve() {
+    const algorithm = document.getElementById("solveAlgorithm").value
+    const state = cubeState()
+    let moves
+    if (algorithm === "beginner") {
+        moves = solveBeginnerMethod(state)
+    }
+    console.log("Solution moves:", moves)
+}
+
+function solveBeginnerMethod(state) {
+    // TODO: implement beginner method (layer-by-layer)
+    // Steps: white cross → white face → middle layer → yellow cross → yellow face → permute last layer
+    // Returns an array of move strings, e.g. ["U", "R", "U'", "R'"]
+    return []
+}
+
 function calculateCentroid(points) {
     return {
         x: points.reduce((acc, x) => acc + x[0], 0) / points.length,
