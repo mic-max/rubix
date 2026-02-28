@@ -334,6 +334,24 @@ svg text.vertex-label {
     box-sizing: border-box;
 }
 
+.move-panel-separator {
+    width: 1px;
+    height: 52px;
+    background: #445566;
+    margin: 0 4px;
+}
+
+.rotation-pair button {
+    background: #2a3a2e;
+    border-color: #3a5540;
+    color: #a0c8a8;
+}
+
+.rotation-pair button:hover {
+    background: #3a5040;
+    border-color: #6a9970;
+}
+
 .shuffle-move {
     color: #576574;
 }

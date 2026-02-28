@@ -64,6 +64,15 @@ const horizontalPolygons = [
     [23, 26, 29, 36, 33, 30],
 ].map(x => x.map(i => vertices[i]))
 
+const rotations = {
+    "X":  ["R",  "M'", "L'"],
+    "X'": ["R'", "M",  "L"],
+    "Y":  ["U",  "E", "D'"],
+    "Y'": ["U'", "E'",  "D"],
+    "Z":  ["F",  "S",  "B'"],
+    "Z'": ["F'", "S'", "B"],
+}
+
 // TODO: extract this to a separate node.js script
 const moves = {
     "U": {
@@ -409,7 +418,7 @@ function validate() {
     // if there could be one or two faces changed to make it valid, change their stroke
 }
 
-function makeMove(move, isShuffle = false, shuffleMoveNum = null) {
+function makeMove(move, isShuffle = false, shuffleMoveNum = null, isRotation = false) {
     if (!validMoves().includes(move)) {
         return console.error(`Invalid Move: ${move}`)
     }
@@ -430,19 +439,26 @@ function makeMove(move, isShuffle = false, shuffleMoveNum = null) {
     // Note: localStorage must be set first so the updating of the polygons gets the
     //       most recent state.
     localStorage.setItem("cubeState", JSON.stringify(state))
-    updatePolygons()
+    if (!isRotation) updatePolygons()
 
-    if (!isShuffle) {
+    if (!isShuffle && !isRotation) {
         // TODO: actually set this to the movequeue length, since a move can be undone by making another move
         // keep a separate actual move and a simplified move counter
         setMoveNumber(++moveNumber)
     }
-    const displayNum = isShuffle ? shuffleMoveNum : moveNumber
-    const row = document.createElement("div")
-    row.textContent = `${displayNum.toString().padStart(4)}. ${move}`
-    if (isShuffle) row.classList.add("shuffle-move")
-    moveHistoryDiv.appendChild(row)
-    moveHistoryDiv.scrollTop = moveHistoryDiv.scrollHeight
+    if (!isRotation) {
+        const displayNum = isShuffle ? shuffleMoveNum : moveNumber
+        const row = document.createElement("div")
+        row.textContent = `${displayNum.toString().padStart(4)}. ${move}`
+        if (isShuffle) row.classList.add("shuffle-move")
+        moveHistoryDiv.appendChild(row)
+        moveHistoryDiv.scrollTop = moveHistoryDiv.scrollHeight
+    }
+}
+
+function makeRotation(name) {
+    rotations[name].forEach(move => makeMove(move, false, null, true))
+    updatePolygons()
 }
 
 function wonky() {
