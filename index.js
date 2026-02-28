@@ -229,8 +229,8 @@ function shuffle() {
                 randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)]
             }
             lastMove = randomMove
-             makeMove(randomMove)	
-             setTimeout(makeNextRandomMove, 10)
+            makeMove(randomMove)
+            setTimeout(makeNextRandomMove, 10)
         }
     }
 
