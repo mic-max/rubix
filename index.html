@@ -29,7 +29,7 @@
     <div id="main">
       <h1>Rubix Cube</h1>
 
-      <p>Rotate the cube with the scroll wheel & left and right click. The inner segments do not rotate.</p>
+      <p>Rotate the cube with the scroll wheel and left + right click.</p>
       <p>The right cube is the view from the other side. It is as if you picked up the left cube and flipped it 180 degrees towards/away from yourself.</p>
 
       <div>
@@ -39,6 +39,8 @@
         <button onclick="makeMove(`L`)">L</button>
         <button onclick="makeMove(`F`)">F</button>
         <button onclick="makeMove(`B`)">B</button>
+        <button onclick="makeMove(`M`)">M</button>
+        <button onclick="makeMove(`S`)">S</button>
       </div>
 
       <div>
@@ -48,6 +50,8 @@
         <button onclick="makeMove(`L'`)">L'</button>
         <button onclick="makeMove(`F'`)">F'</button>
         <button onclick="makeMove(`B'`)">B'</button>
+        <button onclick="makeMove(`M'`)">M'</button>
+        <button onclick="makeMove(`S'`)">S'</button>
       </div>
 
       <div id="cubes" oncontextmenu="return false"></div>
