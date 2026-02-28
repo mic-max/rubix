@@ -1,9 +1,15 @@
 const SVG_NS = "http://www.w3.org/2000/svg"
 
-// Yellow, Blue, Red, White, Orange, Green - https://flatuicolors.com/palette/ca
-const DEFAULT_COLOURS = ["#feca57", "#2e86de", "#ee5253", "#c8d6e5", "#ff9f43", "#10ac84"]
 const UNUSED_COLOUR = "#576574"
-let COLOURS = JSON.parse(localStorage.getItem("colours") || "null") || [...DEFAULT_COLOURS]
+const THEMES = {
+    "default": ["#feca57", "#2e86de", "#ee5253", "#c8d6e5", "#ff9f43", "#10ac84"],
+    "light":   ["#ffeaa7", "#74b9ff", "#ff7675", "#dfe6e9", "#fdcb6e", "#55efc4"],
+    "dark":    ["#b8860b", "#1e3a5f", "#7b1f1f", "#495057", "#8b4513", "#1a5c38"],
+}
+let activeTheme = localStorage.getItem("theme") || "default"
+let COLOURS = activeTheme === "custom"
+    ? (JSON.parse(localStorage.getItem("colours") || "null") || [...THEMES["default"]])
+    : [...THEMES[activeTheme]]
 let polygons = []
 let paintMode = false
 let activePaintColour = null
@@ -633,7 +639,7 @@ function createColourLegend() {
             label.style.backgroundColor = e.target.value
             localStorage.setItem("colours", JSON.stringify(COLOURS))
             updatePolygons()
-            updateResetBtnVisibility()
+            setActiveTheme("custom")
         })
 
         const count = document.createElement("span")
@@ -676,27 +682,21 @@ function createColourLegend() {
     cancelBtn.addEventListener("click", () => exitPaintMode(container, paintBtn, applyBtn, cancelBtn, false))
     leftPanel.appendChild(cancelBtn)
 
-    const resetBtn = document.createElement("button")
-    resetBtn.textContent = "Reset"
-    resetBtn.style.marginTop = "auto"
-    resetBtn.addEventListener("click", () => {
-        COLOURS.splice(0, COLOURS.length, ...DEFAULT_COLOURS)
-        localStorage.removeItem("colours")
-        swatches.forEach(({ label, input }, i) => {
-            input.value = COLOURS[i]
-            label.style.backgroundColor = COLOURS[i]
-        })
-        updatePolygons()
-        updateResetBtnVisibility()
+    const themeSelector = document.createElement("div")
+    themeSelector.id = "theme-selector"
+
+    const themeNames = ["default", "light", "dark", "custom"]
+    themeNames.forEach(name => {
+        const btn = document.createElement("button")
+        btn.textContent = name
+        btn.className = "theme-btn"
+        btn.dataset.theme = name
+        if (name === activeTheme) btn.classList.add("active")
+        btn.addEventListener("click", () => applyTheme(name))
+        themeSelector.appendChild(btn)
     })
-    container.appendChild(resetBtn)
 
-    updateResetBtnVisibility()
-
-    function updateResetBtnVisibility() {
-        const modified = COLOURS.some((c, i) => c !== DEFAULT_COLOURS[i])
-        resetBtn.classList.toggle("hide", !modified)
-    }
+    container.appendChild(themeSelector)
 }
 
 function updateSwatchCounts() {
@@ -753,6 +753,27 @@ function solveBeginnerMethod(state) {
     // Steps: white cross → white face → middle layer → yellow cross → yellow face → permute last layer
     // Returns an array of move strings, e.g. ["U", "R", "U'", "R'"]
     return []
+}
+
+function setActiveTheme(name) {
+    activeTheme = name
+    localStorage.setItem("theme", name)
+    document.querySelectorAll(".theme-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.theme === name)
+    })
+}
+
+function applyTheme(name) {
+    const colours = name === "custom"
+        ? (JSON.parse(localStorage.getItem("colours") || "null") || [...THEMES["default"]])
+        : THEMES[name]
+    COLOURS.splice(0, COLOURS.length, ...colours)
+    swatches.forEach(({ label, input }, i) => {
+        input.value = COLOURS[i]
+        label.style.backgroundColor = COLOURS[i]
+    })
+    updatePolygons()
+    setActiveTheme(name)
 }
 
 function calculateCentroid(points) {

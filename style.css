@@ -175,6 +175,43 @@ svg text.vertex-label {
     position: absolute;
 }
 
+#theme-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: auto;
+    width: 100%;
+}
+
+.theme-btn {
+    background: none;
+    border: 1px solid #444;
+    color: #c8d6e5;
+    font-size: 11px;
+    padding: 3px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.theme-btn::after {
+    content: attr(data-theme);
+    display: block;
+    font-weight: bold;
+    height: 0;
+    overflow: hidden;
+}
+
+.theme-btn:hover {
+    border-color: #aaa;
+}
+
+.theme-btn.active {
+    border-color: white;
+    color: white;
+    font-weight: bold;
+}
+
 .swatch-count {
     display: none;
     position: absolute;
