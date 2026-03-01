@@ -198,16 +198,17 @@ function applyMove(state, moveName) {
     return result
 }
 
+const CUBE_STATE_KEY = "cubeState"
+
 function saveCubeState(state) {
-    localStorage.setItem("cubeState", JSON.stringify(state))
+    localStorage.setItem(CUBE_STATE_KEY, JSON.stringify(state))
 }
 
 function cubeState() {
-    const key = "cubeState"
-    if (localStorage.getItem(key) === null) {
+    if (localStorage.getItem(CUBE_STATE_KEY) === null) {
         resetCubeState()
     }
-    const data = localStorage.getItem(key)
+    const data = localStorage.getItem(CUBE_STATE_KEY)
     return JSON.parse(data)
 }
 
