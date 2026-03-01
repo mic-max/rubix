@@ -74,193 +74,6 @@ const CLICK_MOVES = [
     [["D","E'","U'"], ["D'","E","U"]],
 ]
 
-const rotations = {
-    "X":  ["R",  "M'", "L'"],
-    "X'": ["R'", "M",  "L"],
-    "Y":  ["U",  "E", "D'"],
-    "Y'": ["U'", "E'",  "D"],
-    "Z":  ["F",  "S",  "B'"],
-    "Z'": ["F'", "S'", "B"],
-}
-
-// TODO: extract this to a separate node.js script
-const moves = {
-    "U": {
-        "53": 44,
-        "52": 43,
-        "51": 42,
-        "9": 18,
-        "10": 19,
-        "11": 20,
-        "18": 53,
-        "19": 52,
-        "20": 51,
-        "42": 11,
-        "43": 10,
-        "44": 9,
-        "0": 6,
-        "1": 3,
-        "2": 0,
-        "5": 1,
-        "8": 2,
-        "7": 5,
-        "6": 8,
-        "3": 7,
-    },
-    "E": {
-        "12": 21,
-        "13": 22,
-        "14": 23,
-        "21": 50,
-        "22": 49,
-        "23": 48,
-        "50": 41,
-        "49": 40,
-        "48": 39,
-        "41": 14,
-        "40": 13,
-        "39": 12,
-    },
-    "D": {
-        "15": 38,
-        "16": 37,
-        "17": 36,
-        "24": 15,
-        "25": 16,
-        "26": 17,
-        "47": 24,
-        "46": 25,
-        "45": 26,
-        "38": 47,
-        "37": 46,
-        "36": 45,
-        "27": 33,
-        "28": 30,
-        "29": 27,
-        "32": 28,
-        "35": 29,
-        "34": 32,
-        "33": 35,
-        "30": 34,
-    },
-    "R": {
-        "11": 29,
-        "14": 32,
-        "17": 35,
-        "29": 47,
-        "32": 50,
-        "35": 53,
-        "47": 8,
-        "50": 7,
-        "53": 6,
-        "8": 11,
-        "7": 14,
-        "6": 17,
-        "18": 24,
-        "19": 21,
-        "20": 18,
-        "23": 19,
-        "26": 20,
-        "25": 23,
-        "24": 26,
-        "21": 25,
-    },
-    "L": {
-        "0": 51,
-        "1": 48,
-        "2": 45,
-        "51": 33,
-        "48": 30,
-        "45": 27,
-        "33": 15,
-        "30": 12,
-        "27": 9,
-        "15": 0,
-        "12": 1,
-        "9": 2,
-        "36": 42,
-        "37": 39,
-        "38": 36,
-        "41": 37,
-        "44": 38,
-        "43": 41,
-        "42": 44,
-        "39": 43,
-    },
-    "F": {
-        "0": 36,
-        "3": 39,
-        "6": 42,
-        "18": 0,
-        "21": 3,
-        "24": 6,
-        "29": 18,
-        "28": 21,
-        "27": 24,
-        "36": 29,
-        "39": 28,
-        "42": 27,
-        "9": 15,
-        "10": 12,
-        "11": 9,
-        "14": 10,
-        "17": 11,
-        "16": 14,
-        "15": 17,
-        "12": 16,
-    },
-    "B": {
-        "20": 35,
-        "23": 34,
-        "26": 33,
-        "35": 38,
-        "34": 41,
-        "33": 44,
-        "38": 2,
-        "41": 5,
-        "44": 8,
-        "2": 20,
-        "5": 23,
-        "8": 26,
-        "45": 51,
-        "46": 48,
-        "47": 45,
-        "50": 46,
-        "53": 47,
-        "52": 50,
-        "51": 53,
-        "48": 52,
-    },
-    "M": {
-        "5": 46,
-        "4": 49,
-        "3": 52,
-        "10": 5,
-        "13": 4,
-        "16": 3,
-        "28": 10,
-        "31": 13,
-        "34": 16,
-        "46": 28,
-        "49": 31,
-        "52": 34,
-    },
-    "S": {
-        "1": 37,
-        "4": 40,
-        "7": 43,
-        "19": 1,
-        "22": 4,
-        "25": 7,
-        "32": 19,
-        "31": 22,
-        "30": 25,
-        "37": 32,
-        "40": 31,
-        "43": 30,
-    }
-}
-
 // Main
 let isWonky = false
 let wonkyOffsets = null
@@ -275,7 +88,7 @@ const myParam = urlParams.get("state");
 if (myParam) {
     const buffer = fromBase64(myParam);
     const values = decodeByteBuffer(buffer);
-    localStorage.setItem("cubeState", JSON.stringify(values))
+    saveCubeState(values)
 }
 
 cubesDiv.appendChild(createSVG(0))
@@ -322,7 +135,7 @@ function shuffle() {
     function makeNextRandomMove() {
         if (i < shuffles) {
             let randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)]
-            while (lastMove && randomMove[0] == lastMove[0] && randomMove != lastMove) {
+            while (lastMove && randomMove[0] === lastMove[0] && randomMove !== lastMove) {
                 // If there is a last move and it is the opposite of the current move choice
                 randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)]
             }
@@ -339,62 +152,20 @@ function shuffle() {
     makeNextRandomMove()
 }
 
-function createByteBuffer(values) {
-    const buffer = new Uint8Array(Math.ceil(values.length * 3 / 8)); // 21 bytes
-    for (let i = 0, j = 0; i < values.length; i++, j += 3 ) {
-        const byteIndex = Math.floor(j / 8)
-        const bitOffset = j % 8
-        buffer[byteIndex] |= (values[i] & 0b111) << bitOffset
-        if (bitOffset > 5) {
-            buffer[byteIndex + 1] |= (values[i] & 0b111) >> (8 - bitOffset)
-        }
-    }
-    return buffer
-}
-
-function toBase64(buffer) {
-    // TODO: https://stackoverflow.com/a/72631261 ==> 68 bits
-    let stringValue = String.fromCharCode.apply(null, buffer);
-    return btoa(stringValue)
-}
-
-function fromBase64(base64String) {
-    return new Uint8Array(atob(base64String).split("").map(c => c.charCodeAt(0)))
-}
-
-function decodeByteBuffer(buffer) {
-    const values = [];
-    for (let i = 0, j = 0; i < 54; i++, j += 3) {
-        const byteIndex = Math.floor(j / 8)
-        const bitOffset = j % 8
-        let value = (buffer[byteIndex] >> bitOffset) & 0b111
-        if (bitOffset > 5) {
-            value |= (buffer[byteIndex + 1] << (8 - bitOffset)) & 0b111
-        }
-        values.push(value)
-    }
-    return values
-}
-
 function share() {
     const buffer = createByteBuffer(cubeState());
     const base64String = toBase64(buffer);
     const url = new URL(window.location.href);
     url.searchParams.set("state", base64String);
     navigator.clipboard.writeText(url.toString());
-}
-
-function cubeState() {
-    const key = "cubeState"
-    if (localStorage.getItem(key) === null) {
-        resetCubeState()
-    }
-    const data = localStorage.getItem(key)
-    return JSON.parse(data)
-}
-
-function validMoves() {
-    return Object.keys(moves).concat(Object.keys(moves).map(x => `${x}'`))
+    const btn = document.getElementById("share-btn");
+    const label = document.getElementById("share-label");
+    btn.classList.add("copied");
+    label.textContent = "Copied!";
+    setTimeout(() => {
+        btn.classList.remove("copied");
+        label.textContent = "Copy link";
+    }, 2000);
 }
 
 function isPointInsidePolygon(x, y, polygon) {
@@ -409,12 +180,6 @@ function isPointInsidePolygon(x, y, polygon) {
     }
 
     return isInside
-}
-
-
-function resetCubeState() {
-    localStorage.setItem("cubeState", JSON.stringify(Array.from({length: 54}, (_, i) => Math.floor(i / 9))))
-    resetMoveCounter()
 }
 
 function setMoveNumber(value) {
@@ -444,30 +209,9 @@ function makeMove(move, isShuffle = false, shuffleMoveNum = null, isRotation = f
     if (!validMoves().includes(move)) {
         return console.error(`Invalid Move: ${move}`)
     }
-
-    const copy = Array.from({length: 54}, (_, i) => cubeState()[i])
-    const state = cubeState()
-
-    for (const [key, value] of Object.entries(moves[move[0]])) {
-        if (move.endsWith("'")) {
-            state[value] = copy[key]
-        } else if (move.endsWith("2")) {
-            // TODO: do move twice
-        } else {
-            state[parseInt(key)] = copy[value]
-        }
-    }
-
-    // Note: localStorage must be set first so the updating of the polygons gets the
-    //       most recent state.
-    localStorage.setItem("cubeState", JSON.stringify(state))
+    saveCubeState(applyMove(cubeState(), move))
     if (!isRotation) updatePolygons()
-
-    if (!isShuffle && !isRotation) {
-        // TODO: actually set this to the movequeue length, since a move can be undone by making another move
-        // keep a separate actual move and a simplified move counter
-        setMoveNumber(++moveNumber)
-    }
+    if (!isShuffle && !isRotation) setMoveNumber(++moveNumber)
     if (!isRotation) {
         const displayNum = isShuffle ? shuffleMoveNum : moveNumber
         const row = document.createElement("div")
@@ -510,11 +254,11 @@ function createSVG(cubeNumber) {
     svg.setAttribute("height", 413)
 
     svg.addEventListener("wheel", (event) => wheel(event, svg, cubeNumber))
-    svg.addEventListener("mousedown", (event) => mousedown(event, svg, cubeNumber))	
+    svg.addEventListener("mousedown", (event) => mousedown(event, svg, cubeNumber))
 
     for (let i = 0; i < faces.length; i++) {
         let j = i + cubeNumber * 27
-        
+
         let points = [0, 1, 2, 3].map(x => vertices[faces[i][x]])
 
         let polygon = document.createElementNS(SVG_NS, "polygon")
@@ -548,7 +292,7 @@ function createSVG(cubeNumber) {
             updateSwatchCounts()
         })
         svg.appendChild(polygon)
-        
+
         // Text
         let text = document.createElementNS(SVG_NS, "text")
         text.textContent = j
@@ -717,7 +461,7 @@ function enterPaintMode(container, paintBtn, applyBtn, cancelBtn) {
 
 function exitPaintMode(container, paintBtn, applyBtn, cancelBtn, apply) {
     if (apply) {
-        localStorage.setItem("cubeState", JSON.stringify(paintModeCubeState))
+        saveCubeState(paintModeCubeState)
     }
     paintMode = false
     paintModeCubeState = null
