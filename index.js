@@ -1,7 +1,6 @@
 const SVG_NS = "http://www.w3.org/2000/svg"
 
 const UNUSED_COLOUR = "#576574"
-// Yellow, blue, red, white, orange, green
 const THEMES = {
     "default": ["#feca57", "#2e86de", "#ee5253", "#c8d6e5", "#ff9f43", "#10ac84"],
     "french":  ["#f6b93b", "#4a69bd", "#b71540", "#c8d6e5", "#fa983a", "#079992"],
@@ -74,7 +73,6 @@ const CLICK_MOVES = [
     [["D","E'","U'"], ["D'","E","U"]],
 ]
 
-// Main
 let isWonky = false
 let wonkyOffsets = null
 let moveNumber = 0
@@ -122,7 +120,6 @@ document.getElementById("main").addEventListener("wheel", (event) => {
     }
 }, { passive: false })
 
-// Functions
 function shuffle() {
     const shuffles = parseInt(shuffleMoves.value)
     const availableMoves = validMoves()
@@ -135,7 +132,7 @@ function shuffle() {
     function makeNextRandomMove() {
         if (i < shuffles) {
             let randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)]
-            while (lastMove && randomMove[0] === lastMove[0] && randomMove !== lastMove) {
+            while (lastMove && randomMove === oppositeMove(lastMove)) {
                 // If there is a last move and it is the opposite of the current move choice
                 randomMove = availableMoves[Math.floor(Math.random() * availableMoves.length)]
             }
@@ -222,11 +219,15 @@ function makeMove(move, isShuffle = false, shuffleMoveNum = null, isRotation = f
     }
 }
 
+function oppositeMove(move) {
+    return move.endsWith("'") ? move.slice(0, -1) : move + "'"
+}
+
 function makeRotation(name) {
     const isPrime = name.endsWith("'")
     const base = isPrime ? name.slice(0, -1) : name
     rotations[base]
-        .map(m => isPrime ? (m.endsWith("'") ? m.slice(0, -1) : m + "'") : m)
+        .map(m => isPrime ? oppositeMove(m) : m)
         .forEach(move => makeMove(move, false, null, true))
     updatePolygons()
 }
@@ -249,8 +250,6 @@ function wonky() {
     }
 }
 
-// TODO: generate this svg from JS but then include it in the HTML
-// for SEO, speed, and to at least show something for people with JS disabled.
 function createSVG(cubeNumber) {
     const svg = document.createElementNS(SVG_NS, "svg")
     svg.setAttribute("version", "1.1")
@@ -266,7 +265,7 @@ function createSVG(cubeNumber) {
         let points = [0, 1, 2, 3].map(x => vertices[faces[i][x]])
 
         let polygon = document.createElementNS(SVG_NS, "polygon")
-        polygon.setAttribute("points", points.map(y => y.join(",")).join(",")) // TODO: spaces or commas between points
+        polygon.setAttribute("points", points.map(y => y.join(",")).join(","))
         polygon.setAttribute("fill", COLOURS[cubeState()[j]])
         polygon.setAttribute("stroke", "#222f3e")
         polygon.setAttribute("stroke-width", 2.5)
@@ -297,7 +296,6 @@ function createSVG(cubeNumber) {
         })
         svg.appendChild(polygon)
 
-        // Text
         let text = document.createElementNS(SVG_NS, "text")
         text.textContent = j
         text.classList.add("hide")
