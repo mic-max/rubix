@@ -11,6 +11,9 @@
     <div id="leftPanel">
       <label class="toggle">Debug<input id="debug" type="checkbox" onchange="debug()"><span></span></label>
       <label class="toggle">Wonky<input id="wonky" type="checkbox" onchange="wonky()"><span></span></label>
+      <div id="paint-row">
+        <label class="toggle">Paint<input id="paint" type="checkbox" onchange="togglePaintMode()"><span></span></label>
+      </div>
 
       <button onclick="resetCubeState(); updatePolygons(); resetMoveCounter();">Reset</button>
       <button onclick="shuffle()">Shuffle</button>

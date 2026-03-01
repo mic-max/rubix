@@ -158,7 +158,7 @@ function share() {
     const btn = document.getElementById("share-btn");
     const label = document.getElementById("share-label");
     btn.classList.add("copied");
-    label.textContent = "Copied!";
+    label.textContent = "Copied";
     setTimeout(() => {
         btn.classList.remove("copied");
         label.textContent = "Copy link";
@@ -395,26 +395,16 @@ function createColourLegend() {
 
     const leftPanel = document.getElementById("leftPanel")
 
-    const paintBtn = document.createElement("button")
-    paintBtn.textContent = "Paint Mode"
-    paintBtn.addEventListener("click", () => enterPaintMode(container, paintBtn, applyBtn, cancelBtn))
-    leftPanel.appendChild(paintBtn)
-
     const applyBtn = document.createElement("button")
+    applyBtn.id = "paint-apply-btn"
     applyBtn.textContent = "Apply"
     applyBtn.classList.add("hide")
+    applyBtn.disabled = true
     applyBtn.addEventListener("click", () => {
-        const valid = COLOURS.every((_, i) => paintModeCubeState.filter(v => v === i).length === 9)
-        if (!valid) return
-        exitPaintMode(container, paintBtn, applyBtn, cancelBtn, true)
+        exitPaintMode(container, applyBtn, true)
+        document.getElementById("paint").checked = false
     })
-    leftPanel.appendChild(applyBtn)
-
-    const cancelBtn = document.createElement("button")
-    cancelBtn.textContent = "Cancel"
-    cancelBtn.classList.add("hide")
-    cancelBtn.addEventListener("click", () => exitPaintMode(container, paintBtn, applyBtn, cancelBtn, false))
-    leftPanel.appendChild(cancelBtn)
+    document.getElementById("paint-row").appendChild(applyBtn)
 
     const themeSelector = document.createElement("div")
     themeSelector.id = "theme-selector"
@@ -435,13 +425,28 @@ function createColourLegend() {
 
 function updateSwatchCounts() {
     const state = paintMode ? paintModeCubeState : cubeState()
+    let allValid = true
     swatches.forEach(({ count, indicator }, i) => {
         const n = state.filter(v => v === i).length
         count.textContent = n
         indicator.textContent = n === 9 ? "\u2713" : "\u2717"
         indicator.classList.toggle("ok", n === 9)
         indicator.classList.toggle("err", n !== 9)
+        if (n !== 9) allValid = false
     })
+    const applyBtn = document.getElementById("paint-apply-btn")
+    if (applyBtn) applyBtn.disabled = !allValid
+}
+
+function togglePaintMode() {
+    const input = document.getElementById("paint")
+    const container = document.getElementById("colour-legend")
+    const applyBtn = document.getElementById("paint-apply-btn")
+    if (input.checked) {
+        enterPaintMode(container, applyBtn)
+    } else {
+        exitPaintMode(container, applyBtn, false)
+    }
 }
 
 function setActivePaintColour(i) {
@@ -449,19 +454,17 @@ function setActivePaintColour(i) {
     swatches.forEach(({ label }, idx) => label.classList.toggle("active", idx === i))
 }
 
-function enterPaintMode(container, paintBtn, applyBtn, cancelBtn) {
+function enterPaintMode(container, applyBtn) {
     paintMode = true
     paintModeCubeState = Array(54).fill(-1)
     updatePolygons()
     updateSwatchCounts()
-    paintBtn.classList.add("hide")
     applyBtn.classList.remove("hide")
-    cancelBtn.classList.remove("hide")
     container.classList.add("paint-mode")
     setActivePaintColour(0)
 }
 
-function exitPaintMode(container, paintBtn, applyBtn, cancelBtn, apply) {
+function exitPaintMode(container, applyBtn, apply) {
     if (apply) {
         saveCubeState(paintModeCubeState)
     }
@@ -470,9 +473,8 @@ function exitPaintMode(container, paintBtn, applyBtn, cancelBtn, apply) {
     activePaintColour = null
     swatches.forEach(({ label }) => label.classList.remove("active"))
     updatePolygons()
-    paintBtn.classList.remove("hide")
     applyBtn.classList.add("hide")
-    cancelBtn.classList.add("hide")
+    applyBtn.disabled = true
     container.classList.remove("paint-mode")
 }
 

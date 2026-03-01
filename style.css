@@ -382,3 +382,25 @@ h1 {
     border-color: #10ac84;
     color: #10ac84;
 }
+
+#paint-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#paint-row .toggle {
+    flex: 1;
+    min-width: 0;
+}
+
+#paint-apply-btn {
+    padding: 2px 6px;
+    font-size: 11px;
+    flex-shrink: 0;
+}
+
+#paint-apply-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
