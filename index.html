@@ -9,8 +9,8 @@
   <div id="layout">
 
     <div id="leftPanel">
-      <label>Debug Mode <input id="debug" type="checkbox" onchange="debug()"></label>
-      <label>Wonky Mode <input id="wonky" type="checkbox" onchange="wonky()"></label>
+      <label class="toggle">Debug<input id="debug" type="checkbox" onchange="debug()"><span></span></label>
+      <label class="toggle">Wonky<input id="wonky" type="checkbox" onchange="wonky()"><span></span></label>
 
       <button onclick="resetCubeState(); updatePolygons(); resetMoveCounter();">Reset</button>
       <button onclick="shuffle()">Shuffle</button>

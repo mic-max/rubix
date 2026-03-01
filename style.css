@@ -109,6 +109,48 @@ h1 {
     font-size: 14px;
 }
 
+.toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+}
+
+.toggle input[type="checkbox"] {
+    display: none;
+}
+
+.toggle span {
+    position: relative;
+    width: 36px;
+    height: 20px;
+    flex-shrink: 0;
+    background: #445566;
+    border-radius: 10px;
+    transition: background 0.2s;
+}
+
+.toggle span::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: #c8d6e5;
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+    transition: left 0.2s;
+}
+
+.toggle input:checked + span {
+    background: #10ac84;
+}
+
+.toggle input:checked + span::after {
+    left: 19px;
+}
+
 #leftPanel input[type="number"] {
     width: 100%;
     box-sizing: border-box;
