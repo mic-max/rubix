@@ -120,6 +120,8 @@ make the toggle buttons look nicer for debug and wonky mode.
 - Add an application manifest "defines how your app appears on phone's home screens and what the app looks like on launch"
 - Add mobile support
 
+- Only run deployment when one of the actual deploy related files is modified (if I only modify the readme, do nothing)
+
 ## Testing
 
 create a test script that keeps existing functions
