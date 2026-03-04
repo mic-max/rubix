@@ -2,10 +2,13 @@
   "name": "rubiks",
   "private": true,
   "scripts": {
-    "build": "node build.js"
+    "build": "node build.js",
+    "dev": "node dev.js"
   },
   "devDependencies": {
-    "clean-css": "^5.3.3",
-    "terser": "^5.36.0"
+    "chokidar": "3.6.0",
+    "clean-css": "5.3.3",
+    "serve": "14.2.6",
+    "terser": "5.36.0"
   }
 }
